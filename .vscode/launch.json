@@ -1,0 +1,225 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Python Debugger: Postupprojection_ETTh1_96_96",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/run.py",
+            "console": "integratedTerminal",
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "0"
+            },
+            "args": [
+                "--task_name", "long_term_forecast",
+                "--is_training", "1",
+                "--root_path", "./dataset/ETT-small/",
+                "--data_path", "ETTh1.csv",
+                "--model_id", "ETTh1_96_96",
+                "--model", "Postupprojection",
+                "--data", "ETTh1",
+                "--features", "M",
+                "--seq_len", "96",
+                "--label_len", "48",
+                "--pred_len", "96",
+                "--e_layers", "2",
+                "--d_layers", "1",
+                "--factor", "3",
+                "--enc_in", "7",
+                "--dec_in", "7",
+                "--c_out", "7",
+                "--des", "Exp",
+                "--itr", "1"
+            ]
+        },
+        {
+            "name": "Python Debugger: iTransformer_ETTh2_96_96",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/run.py",
+            "console": "integratedTerminal",
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "0"
+            },
+            "args": [
+                "--task_name", "long_term_forecast",
+                "--is_training", "1",
+                "--root_path", "./dataset/ETT-small/",
+                "--data_path", "ETTh2.csv",
+                "--model_id", "ETTh2_96_96",
+                "--model", "iTransformer",
+                "--data", "ETTh2",
+                "--features", "M",
+                "--seq_len", "96",
+                "--label_len", "48",
+                "--pred_len", "96",
+                "--e_layers", "2",
+                "--d_layers", "1",
+                "--factor", "3",
+                "--enc_in", "7",
+                "--dec_in", "7",
+                "--c_out", "7",
+                "--des", "Exp",
+                "--d_model", "128",
+                "--d_ff", "128",
+                "--itr", "1",
+                "--n_heads", "1",
+            ]
+        },
+        {
+            "name": "Run JDPatchTST (ETTh1_96_96)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/run.py",
+            "console": "integratedTerminal",
+            "env": {
+              "CUDA_VISIBLE_DEVICES": "0"
+            },
+            "args": [
+              "--task_name", "long_term_forecast",
+              "--is_training", "1",
+              "--root_path", "./dataset/ETT-small/",
+              "--data_path", "ETTh1.csv",
+              "--model_id", "ETTh1_96_96",
+              "--model", "JDPatchTST",
+              "--data", "ETTh1",
+              "--features", "M",
+              "--seq_len", "96",
+              "--label_len", "48",
+              "--pred_len", "96",
+              "--e_layers", "1",
+              "--d_layers", "1",
+              "--factor", "3",
+              "--enc_in", "7",
+              "--dec_in", "7",
+              "--c_out", "7",
+              "--des", "Exp",
+              "--n_heads", "2",
+              "--itr", "1"
+            ]
+          },
+          {
+            "name": "Python: Run Transformer Classification",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/run.py",
+            "console": "integratedTerminal",
+            "env": {
+              "CUDA_VISIBLE_DEVICES": "0"
+            },
+            "args": [
+              "--task_name", "classification",
+              "--is_training", "1",
+              "--root_path", "./dataset/EthanolConcentration/",
+              "--model_id", "EthanolConcentration",
+              "--model", "Transformer",
+              "--data", "UEA",
+              "--e_layers", "3",
+              "--batch_size", "16",
+              "--d_model", "128",
+              "--d_ff", "256",
+              "--top_k", "3",
+              "--des", "Exp",
+              "--itr", "1",
+              "--learning_rate", "0.001",
+              "--train_epochs", "100",
+              "--patience", "10"
+            ]
+          },
+          {
+      "name": "Autoformer - M4 Monthly Forecast",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "console": "integratedTerminal",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "args": [
+        "--task_name", "short_term_forecast",
+        "--is_training", "1",
+        "--root_path", "./dataset/m4",
+        "--seasonal_patterns", "Monthly",
+        "--model_id", "m4_Monthly",
+        "--model", "Autoformer",
+        "--data", "m4",
+        "--features", "M",
+        "--e_layers", "2",
+        "--d_layers", "1",
+        "--factor", "3",
+        "--enc_in", "1",
+        "--dec_in", "1",
+        "--c_out", "1",
+        "--batch_size", "16",
+        "--d_model", "512",
+        "--des", "Exp",
+        "--itr", "1",
+        "--learning_rate", "0.001",
+        "--loss", "SMAPE"
+      ]
+    },
+     {
+      "name": "Run JDS_Mamba Classification",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "console": "integratedTerminal",
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "args": [
+        "--task_name", "classification",
+        "--is_training", "1",
+        "--root_path", "./dataset/EthanolConcentration/",
+        "--model_id", "EthanolConcentration",
+        "--model", "JDS_Mamba",
+        "--data", "UEA",
+        "--e_layers", "3",
+        "--batch_size", "16",
+        "--d_model", "2048",
+        "--d_state", "8",
+        "--d_ff", "256",
+        "--top_k", "3",
+        "--des", "Exp",
+        "--itr", "1",
+        "--learning_rate", "0.001",
+        "--train_epochs", "100",
+        "--patience", "10",
+        "--enc_in", "3"
+      ]
+    },
+    {
+      "name": "Debug JDMamba classification",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      },
+      "args": [
+        "--task_name", "classification",
+        "--is_training", "1",
+        "--root_path", "./dataset/EthanolConcentration/",
+        "--model_id", "EthanolConcentration",
+        "--model", "JDMamba",
+        "--data", "UEA",
+        "--e_layers", "3",
+        "--batch_size", "16",
+        "--d_model", "2048",
+        "--expand", "8",
+        "--d_ff", "256",
+        "--top_k", "3",
+        "--des", "Exp",
+        "--d_conv", "4",
+        "--itr", "1",
+        "--learning_rate", "0.001",
+        "--train_epochs", "100",
+        "--patience", "10",
+        "--enc_in", "3"
+      ]
+    }
+    ]
+}
