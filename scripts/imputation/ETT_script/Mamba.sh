@@ -13,7 +13,7 @@ python -u run.py \
   --model_id $data_name'_mask_0.125' \
   --mask_rate 0.125 \
   --model $model_name \
-  --data ETTh2 \
+  --data $data_name \
   --features M \
   --seq_len 96 \
   --label_len 0 \
@@ -42,7 +42,7 @@ python -u run.py \
   --model_id $data_name'_mask_0.25' \
   --mask_rate 0.25 \
   --model $model_name \
-  --data ETTh2 \
+  --data $data_name \
   --features M \
   --seq_len 96 \
   --label_len 0 \
@@ -71,7 +71,7 @@ python -u run.py \
   --model_id $data_name'_mask_0.375' \
   --mask_rate 0.375 \
   --model $model_name \
-  --data ETTh2 \
+  --data $data_name \
   --features M \
   --seq_len 96 \
   --label_len 0 \
@@ -100,7 +100,7 @@ python -u run.py \
   --model_id $data_name'_mask_0.5' \
   --mask_rate 0.5 \
   --model $model_name \
-  --data ETTh2 \
+  --data $data_name \
   --features M \
   --seq_len 96 \
   --label_len 0 \

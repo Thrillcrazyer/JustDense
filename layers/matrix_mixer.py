@@ -247,7 +247,7 @@ class MatrixMixer(nn.Module):
                 y = self.matrix_mixer(v, qk, dt)
 
         # Multiply "gate" branch and apply extra normalization layer
-        y = self.norm(y, z)
+        #y = self.norm(y, z)
         out = self.out_proj(y)
 
         return out

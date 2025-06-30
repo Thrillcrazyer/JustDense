@@ -23,7 +23,7 @@ python -u run.py \
   --c_out 21 \
   --batch_size 16 \
   --d_model 128 \
---expand 2\
+  --expand 2 \
   --d_conv 4 \
   --d_ff 128 \
   --des 'Exp' \
@@ -52,8 +52,8 @@ python -u run.py \
   --c_out 21 \
   --batch_size 16 \
   --d_model 128 \
---expand 2\
---d_conv 4 \
+  --expand 2 \
+  --d_conv 4 \
   --d_ff 128 \
   --des 'Exp' \
   --itr 1 \
@@ -81,8 +81,8 @@ python -u run.py \
   --c_out 21 \
   --batch_size 16 \
   --d_model 128 \
---expand 2\
---d_conv 4 \
+  --expand 2 \
+  --d_conv 4 \
   --d_ff 128 \
   --des 'Exp' \
   --itr 1 \
@@ -110,8 +110,8 @@ python -u run.py \
   --c_out 21 \
   --batch_size 16 \
   --d_model 128 \
---expand 2\
---d_conv 4 \
+  --expand 2 \
+  --d_conv 4 \
   --d_ff 128 \
   --des 'Exp' \
   --itr 1 \

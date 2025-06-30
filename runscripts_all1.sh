@@ -21,5 +21,5 @@
 # ./run_all.sh --path /workspace/JDscripts/imputation/Weather_script
 
 #./run_all.sh --path /workspace/JDscripts/long_term_forecast/ECL_script
-./run_all.sh --path /workspace/JDscripts/long_term_forecast/ETT_script
+#./run_all.sh --path /workspace/JDscripts/long_term_forecast/ETT_script
 

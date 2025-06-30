@@ -113,12 +113,18 @@ def parse_to_csv_imputation(input_path, output_path='imputation_results.csv'):
             lines = entry.strip().split('\n')
             line = lines[0].strip()
             metrics = " ".join(lines[1:]).strip()
-
-            name_parts = line.split('_')
-            task = name_parts[0]  # 'imputation'
-            dataset = name_parts[1]  # e.g., 'ETTh1'
-            mask_ratio = name_parts[3]  # e.g., '0.125'
-            model = name_parts[4]  # e.g., 'Autoformer'
+            if 'PatchTST' in line:
+                name_parts = line.split('_')
+                task = name_parts[0]  # 'imputation'
+                dataset = name_parts[4]  # e.g., 'ETTh1'
+                mask_ratio = name_parts[2]  # e.g., '0.125'
+                model = name_parts[3]  # e.g., 'PatchTST'
+            else:
+                name_parts = line.split('_')
+                task = name_parts[0]  # 'imputation'
+                dataset = name_parts[5]  # e.g., 'ETTh1'
+                mask_ratio = name_parts[3]  # e.g., '0.125'
+                model = name_parts[4]  # e.g., 'Autoformer'
 
             mse = re.search(r'mse[:：]\s*([0-9.eE+-]+)', metrics).group(1)
             mae = re.search(r'mae[:：]\s*([0-9.eE+-]+)', metrics).group(1)
@@ -175,7 +181,7 @@ def parse_to_csv_longterm_forecast(input_path, output_path='longterm_forecast_pa
 
 if __name__ == '__main__':
     # 사용 예시
-    parse_to_csv_classification('result_classification.txt','result_classification.csv')
+    #parse_to_csv_classification('result_classification.txt','result_classification.csv')
     parse_to_csv_imputation('result_imputation.txt')
-    parse_to_csv_anomaly('result_anomaly_detection.txt')
-    parse_to_csv_longterm_forecast('result_long_term_forecast.txt')
+    #parse_to_csv_anomaly('result_anomaly_detection.txt')
+    #parse_to_csv_longterm_forecast('result_long_term_forecast.txt')

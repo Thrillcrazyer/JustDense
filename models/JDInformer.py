@@ -35,7 +35,7 @@ class Model(nn.Module):
                             qk_dim=-1,
                             d_model=configs.d_model,
                             is_data_dependent=False,
-                            max_seq_len=configs.seq_len,
+                            max_seq_len=configs.seq_len//2+1,
                             nheads=configs.d_model//2,
                         ),
                     configs.d_model,
