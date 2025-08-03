@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=0
 
-model_name=Autoformer
-
+for model_name in Autoformer JDAutoformer
+do
 python -u run.py \
   --task_name imputation \
   --is_training 1 \
@@ -109,3 +109,4 @@ python -u run.py \
   --itr 1 \
   --top_k 5 \
   --learning_rate 0.001
+done

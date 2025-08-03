@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=0
 
-model_name=Mamba
-
+for model_name in Mamba JDMamba
+do
 python -u run.py \
   --task_name imputation \
   --is_training 1 \
@@ -15,13 +15,12 @@ python -u run.py \
   --seq_len 96 \
   --label_len 0 \
   --pred_len 0 \
-  --e_layers 2 \
+  --e_layers 1 \
   --d_layers 1 \
   --factor 3 \
   --enc_in 321 \
   --dec_in 321 \
   --c_out 321 \
-  --batch_size 16 \
   --d_model 128 \
   --expand 2\
   --d_ff 128 \
@@ -44,13 +43,12 @@ python -u run.py \
   --seq_len 96 \
   --label_len 0 \
   --pred_len 0 \
-  --e_layers 2 \
+  --e_layers 1 \
   --d_layers 1 \
   --factor 3 \
   --enc_in 321 \
   --dec_in 321 \
   --c_out 321 \
-  --batch_size 16 \
   --d_model 128 \
 --expand 2\
    --d_conv 4 \
@@ -73,13 +71,12 @@ python -u run.py \
   --seq_len 96 \
   --label_len 0 \
   --pred_len 0 \
-  --e_layers 2 \
+  --e_layers 1 \
   --d_layers 1 \
   --factor 3 \
   --enc_in 321 \
   --dec_in 321 \
   --c_out 321 \
-  --batch_size 16 \
   --d_model 128 \
 --expand 2\
  --d_conv 4 \
@@ -102,13 +99,12 @@ python -u run.py \
   --seq_len 96 \
   --label_len 0 \
   --pred_len 0 \
-  --e_layers 2 \
+  --e_layers 1 \
   --d_layers 1 \
   --factor 3 \
   --enc_in 321 \
   --dec_in 321 \
   --c_out 321 \
-  --batch_size 16 \
   --d_model 128 \
   --expand 2\
    --d_conv 4 \
@@ -117,3 +113,4 @@ python -u run.py \
   --itr 1 \
   --top_k 5 \
   --learning_rate 0.001
+done

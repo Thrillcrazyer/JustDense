@@ -3,7 +3,25 @@
 *.txt
 dataset/
 test_results/
+test_results_old/
 results/
+all_datasets/
+ModernTCN/
+m4_results/
+.vscode/
+__MACOSX/
+.vscode/
+
+
+# SH files
+tt.sh
+last_im.sh
+last.sh
+total.ipynb
+runscriptes_all1.sh
+runscriptes_all2.sh
+visualize.ipynb
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

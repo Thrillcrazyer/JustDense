@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=1
 
-model_name=Autoformer
-
+for model_name in Autoformer JDAutoformer
+do
 python -u run.py \
   --task_name short_term_forecast \
   --is_training 1 \
@@ -133,3 +133,5 @@ python -u run.py \
   --itr 1 \
   --learning_rate 0.001 \
   --loss 'SMAPE'
+
+done

@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=0
 
-model_name=Mamba
-
+for model_name in Transformer JDTransformer
+do
 for pred_len in 96 192 336 720
 do
 
@@ -17,7 +17,7 @@ python -u run.py \
   --seq_len $pred_len  \
   --label_len 48 \
   --pred_len $pred_len \
-  --e_layers 2 \
+  --e_layers 1 \
   --d_layers 1 \
   --enc_in 21 \
   --expand 2 \
@@ -28,4 +28,5 @@ python -u run.py \
   --des 'Exp' \
   --itr 1 \
 
+done
 done

@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=1
 
-model_name=S_Mamba
-
+for model_name in JDS_Mamba
+do
 python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
@@ -90,3 +90,5 @@ python -u run.py \
   --batch_size 16 \
   --learning_rate 0.0008\
   --itr 1
+
+done

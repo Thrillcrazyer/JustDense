@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=1
 
-model_name=PatchTST
-
+for model_name in PatchTST JDPatchTST
+do
 python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
@@ -89,3 +89,4 @@ python -u run.py \
   --des 'Exp' \
   --n_heads 16 \
   --itr 1
+done

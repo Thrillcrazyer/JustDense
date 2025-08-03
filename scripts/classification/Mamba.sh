@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=1
 
-model_name=Mamba
-
+for model_name in Mamba JDMamba
+do
 python -u run.py \
   --task_name classification \
   --is_training 1 \
@@ -11,7 +11,7 @@ python -u run.py \
   --data UEA \
   --e_layers 2 \
   --batch_size 16 \
-  --d_model 2048 \
+  --d_model 512 \
   --expand 8\
   --d_ff 256 \
   --top_k 3 \
@@ -211,3 +211,4 @@ python -u run.py \
   --train_epochs 100 \
   --patience 10 \
   --enc_in 3
+done

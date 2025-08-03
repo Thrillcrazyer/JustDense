@@ -116,13 +116,13 @@ def parse_to_csv_imputation(input_path, output_path='imputation_results.csv'):
             if 'PatchTST' in line:
                 name_parts = line.split('_')
                 task = name_parts[0]  # 'imputation'
-                dataset = name_parts[4]  # e.g., 'ETTh1'
-                mask_ratio = name_parts[2]  # e.g., '0.125'
-                model = name_parts[3]  # e.g., 'PatchTST'
+                dataset = name_parts[1]  # e.g., 'ETTh1'
+                mask_ratio = name_parts[3]  # e.g., '0.125'
+                model = name_parts[4]  # e.g., 'PatchTST'
             else:
                 name_parts = line.split('_')
                 task = name_parts[0]  # 'imputation'
-                dataset = name_parts[5]  # e.g., 'ETTh1'
+                dataset = name_parts[1]  # e.g., 'ETTh1'
                 mask_ratio = name_parts[3]  # e.g., '0.125'
                 model = name_parts[4]  # e.g., 'Autoformer'
 
@@ -155,15 +155,21 @@ def parse_to_csv_longterm_forecast(input_path, output_path='longterm_forecast_pa
         try:
             lines = entry.split('\n')
             name_line = lines[0].strip()
+            line = lines[0].strip()
             metrics_line = " ".join(lines[1:]).strip()
-
-            # 예시: long_term_forecast_ETTm1_96_96_PatchTST_ETTm1_ftM_...
             name_parts = name_line.split('_')
-            # dataset: ETTm1, pred_len: 96, model: PatchTST
-            dataset = name_parts[3]
-            seq_len= name_parts[4]  # seq_len is not used in the output
-            pred_len = name_parts[5]
-            model = name_parts[6]
+            if 'ModernTCN' in line:
+                dataset = name_parts[3]  # e.g., 'ECL'
+                seq_len= name_parts[7]  # seq_len is not used in the output
+                pred_len = name_parts[8]
+                model = name_parts[4]
+            else:
+                # 예시: long_term_forecast_ETTm1_96_96_PatchTST_ETTm1_ftM_...
+                # dataset: ETTm1, pred_len: 96, model: PatchTST
+                dataset = name_parts[3]
+                seq_len= name_parts[4]  # seq_len is not used in the output
+                pred_len = name_parts[5]
+                model = name_parts[6]
 
             mse = re.search(r'mse[:：]\s*([0-9.eE+-]+)', metrics_line).group(1)
             mae = re.search(r'mae[:：]\s*([0-9.eE+-]+)', metrics_line).group(1)
@@ -182,6 +188,6 @@ def parse_to_csv_longterm_forecast(input_path, output_path='longterm_forecast_pa
 if __name__ == '__main__':
     # 사용 예시
     #parse_to_csv_classification('result_classification.txt','result_classification.csv')
-    parse_to_csv_imputation('result_imputation.txt')
+    #parse_to_csv_imputation('result_imputation.txt')
     #parse_to_csv_anomaly('result_anomaly_detection.txt')
-    #parse_to_csv_longterm_forecast('result_long_term_forecast.txt')
+    parse_to_csv_longterm_forecast('result_long_term_forecast.txt')

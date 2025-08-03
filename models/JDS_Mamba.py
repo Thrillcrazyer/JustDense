@@ -32,16 +32,16 @@ class Model(nn.Module):
                             qk_dim=-1,
                             d_model=configs.d_model,
                             is_data_dependent=False,
-                            max_seq_len=configs.enc_in+4,
-                            nheads=configs.d_model//2
+                            max_seq_len=configs.enc_in,
+                            nheads=configs.n_heads,
                         ),
                         MatrixMixer(
                             matrix_mixer_type="dense",
                             qk_dim=-1,
                             d_model=configs.d_model,
                             is_data_dependent=False,
-                            max_seq_len=configs.enc_in+4,
-                            nheads=configs.d_model//2
+                            max_seq_len=configs.enc_in,
+                            nheads=configs.n_heads,
                         ),
                     configs.d_model,
                     configs.d_ff,
@@ -54,9 +54,63 @@ class Model(nn.Module):
 
 
         if self.task_name == 'long_term_forecast' or self.task_name == 'short_term_forecast':
+            self.encoder = Encoder(
+                        [
+                            EncoderLayer(
+                                    MatrixMixer(
+                                        matrix_mixer_type="dense",
+                                        qk_dim=-1,
+                                        d_model=configs.d_model,
+                                        is_data_dependent=False,
+                                        max_seq_len=configs.enc_in+4,
+                                        nheads=configs.d_model//2
+                                    ),
+                                    MatrixMixer(
+                                        matrix_mixer_type="dense",
+                                        qk_dim=-1,
+                                        d_model=configs.d_model,
+                                        is_data_dependent=False,
+                                        max_seq_len=configs.enc_in+4,
+                                        nheads=configs.d_model//2
+                                    ),
+                                configs.d_model,
+                                configs.d_ff,
+                                dropout=configs.dropout,
+                                activation=configs.activation
+                            ) for l in range(configs.e_layers)
+                        ],
+                        norm_layer=torch.nn.LayerNorm(configs.d_model)
+                )
             self.projection = nn.Linear(configs.d_model, configs.pred_len, bias=True)
         if self.task_name == 'imputation':
             self.projection = nn.Linear(configs.d_model, configs.seq_len, bias=True)
+            self.encoder = Encoder(
+                        [
+                            EncoderLayer(
+                                    MatrixMixer(
+                                        matrix_mixer_type="dense",
+                                        qk_dim=-1,
+                                        d_model=configs.d_model,
+                                        is_data_dependent=False,
+                                        max_seq_len=configs.enc_in+4,
+                                        nheads=configs.d_model//2
+                                    ),
+                                    MatrixMixer(
+                                        matrix_mixer_type="dense",
+                                        qk_dim=-1,
+                                        d_model=configs.d_model,
+                                        is_data_dependent=False,
+                                        max_seq_len=configs.enc_in+4,
+                                        nheads=configs.d_model//2
+                                    ),
+                                configs.d_model,
+                                configs.d_ff,
+                                dropout=configs.dropout,
+                                activation=configs.activation
+                            ) for l in range(configs.e_layers)
+                        ],
+                        norm_layer=torch.nn.LayerNorm(configs.d_model)
+                )
         if self.task_name == 'anomaly_detection':
             self.projection = nn.Linear(configs.d_model, configs.seq_len, bias=True)
         if self.task_name == 'classification':

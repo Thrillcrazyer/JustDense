@@ -1,50 +1,23 @@
 import os
 import torch
-from models import Autoformer, JDiTransformer, Transformer, TimesNet, Nonstationary_Transformer, DLinear, FEDformer, \
-    Informer, LightTS, Reformer, ETSformer, Pyraformer, PatchTST, MICN, Crossformer, FiLM, iTransformer, \
-    Koopa, TiDE, FreTS, TimeMixer, TSMixer, SegRNN, MambaSimple, TemporalFusionTransformer, SCINet, PAttn, TimeXer, \
-    WPMixer, MultiPatchFormer,JDPatchTST,S_Mamba,JDTransformer,JDS_Mamba,JDAutoformer,JDInformer,JDMamba
+from models import Autoformer, JDiTransformer, Transformer, \
+    PatchTST,iTransformer, JDPatchTST,S_Mamba,JDTransformer,JDS_Mamba,JDAutoformer,JDMamba
+
 
 
 class Exp_Basic(object):
     def __init__(self, args):
         self.args = args
         self.model_dict = {
-            'TimesNet': TimesNet,
             'Autoformer': Autoformer,
             'Transformer': Transformer,
-            'Nonstationary_Transformer': Nonstationary_Transformer,
-            'DLinear': DLinear,
-            'FEDformer': FEDformer,
-            'Informer': Informer,
-            'LightTS': LightTS,
-            'Reformer': Reformer,
-            'ETSformer': ETSformer,
             'PatchTST': PatchTST,
-            'Pyraformer': Pyraformer,
-            'MICN': MICN,
-            'Crossformer': Crossformer,
-            'FiLM': FiLM,
             'iTransformer': iTransformer,
-            'Koopa': Koopa,
-            'TiDE': TiDE,
-            'FreTS': FreTS,
-            'MambaSimple': MambaSimple,
-            'TimeMixer': TimeMixer,
-            'TSMixer': TSMixer,
-            'SegRNN': SegRNN,
-            'TemporalFusionTransformer': TemporalFusionTransformer,
-            "SCINet": SCINet,
-            'PAttn': PAttn,
-            'TimeXer': TimeXer,
-            'WPMixer': WPMixer,
             'S_Mamba': S_Mamba,
-            'MultiPatchFormer': MultiPatchFormer,
             'JDiTransformer':JDiTransformer,
             'JDPatchTST':JDPatchTST,
             'JDTransformer':JDTransformer,
             'JDMamba':JDMamba,
-            'JDInformer':JDInformer,
             'JDAutoformer':JDAutoformer,
             'JDS_Mamba':JDS_Mamba
         }

@@ -151,7 +151,8 @@ class MatrixMixer(nn.Module):
 
         if self.matrix_mixer_type == "dense":
             y = self.matrix_mixer(u)
-            attn_mask= self.matrix_mixer.M
+            #attn_mask= self.matrix_mixer.M 
+            attn_mask=None
             
         elif self.matrix_mixer_type == "toeplitz":
             if self.is_data_dependent:
@@ -206,4 +207,5 @@ class MatrixMixer(nn.Module):
         
         if self.matrix_mixer_type!='dense':
             attn_mask=None
+        
         return out,attn_mask

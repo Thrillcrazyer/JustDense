@@ -4,15 +4,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from mamba_ssm import Mamba
+from models.MambaSimple import Mamba
 
 from layers.Embed import DataEmbedding
-from layers.matrix_mixer import MatrixMixer
-
-#! TODO 이것도 Classification,Detection... etc 할 수 있도록 수정하기.
 
 class Model(nn.Module):
-    
     def __init__(self, configs):
         super(Model, self).__init__()
         self.task_name = configs.task_name
@@ -41,6 +37,16 @@ class Model(nn.Module):
             self.dropout = nn.Dropout(configs.dropout)
             self.projection = nn.Linear(configs.d_model * configs.seq_len, configs.num_class)
 
+    def get_mixers(self, x_enc, x_mark_enc, x_dec=None, x_mark_dec=None):
+        mean_enc = x_enc.mean(1, keepdim=True).detach()
+        x_enc = x_enc - mean_enc
+        std_enc = torch.sqrt(torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5).detach()
+        x_enc = x_enc / std_enc
+
+        x = self.embedding(x_enc, x_mark_enc)
+        attn=self.mamba.get_matrixmixer(x)
+        return attn
+        
     def forecast(self, x_enc, x_mark_enc):
         mean_enc = x_enc.mean(1, keepdim=True).detach()
         x_enc = x_enc - mean_enc

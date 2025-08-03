@@ -26,7 +26,7 @@ class Model(nn.Module):
                 EncoderLayer(
                     AttentionLayer(
                         FullAttention(False, configs.factor, attention_dropout=configs.dropout,
-                                      output_attention=False), configs.d_model, configs.n_heads),
+                                      output_attention=configs.output_attention), configs.d_model, configs.n_heads),
                     configs.d_model,
                     configs.d_ff,
                     dropout=configs.dropout,
@@ -52,17 +52,24 @@ class Model(nn.Module):
         """
         Get the matrix mixers used in the model.
         """
-        # Normalization from Non-stationary Transformer
-        means = x_enc.mean(1, keepdim=True).detach()
-        x_enc = x_enc - means
-        stdev = torch.sqrt(torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5)
-        x_enc /= stdev
-
-        _, L, N = x_enc.shape
-
-        # Embedding
         enc_out = self.enc_embedding(x_enc, x_mark_enc)
-        enc_out, attns = self.encoder(enc_out, attn_mask=None)
+        attns=[]
+        n=0
+        for layer in self.encoder.attn_layers:
+            
+            conv1= layer.conv1.weight.squeeze(-1)
+            conv2= layer.conv2.weight.squeeze(-1)
+            wx= torch.einsum('bcm,fm -> bcf',enc_out,conv1)
+            indicator = (wx > 0).float()  # [batch_size, seq_len, d_model]
+            D_x = torch.diag_embed(indicator)
+            attn=conv2 @ D_x @conv1
+            attns.append(attn)
+        #     n+=1
+        #     if attn is None:
+        #         attns=attn
+        #     attns+=attn
+        # attns /= n
+        # print("ATTNS SHAPE: ",attns.shape)
         return attns
     
     def forecast(self, x_enc, x_mark_enc, x_dec, x_mark_dec):

@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=0
 
-model_name=Autoformer
-
+for model_name in Autoformer JDAutoformer
+do
 python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
@@ -85,3 +85,4 @@ python -u run.py \
   --c_out 321 \
   --des 'Exp' \
   --itr 1
+done

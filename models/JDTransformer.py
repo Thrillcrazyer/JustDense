@@ -49,7 +49,7 @@ class Model(nn.Module):
                             d_model=configs.d_model,
                             is_data_dependent=False,
                             max_seq_len=configs.seq_len,
-                            nheads=configs.d_model//2
+                            nheads=configs.n_heads
                         ),
                     configs.d_model,
                     configs.d_ff,
@@ -102,6 +102,13 @@ class Model(nn.Module):
         dec_out = self.dec_embedding(x_dec, x_mark_dec)
         dec_out = self.decoder(dec_out, enc_out, x_mask=None, cross_mask=None)
         return dec_out
+    
+    def get_mixers(self, x_enc, x_mark_enc, x_dec, x_mark_dec):
+        # Embedding
+        enc_out = self.enc_embedding(x_enc, x_mark_enc)
+        enc_out, attns = self.encoder(enc_out, attn_mask=None)
+
+        return attns
 
     def imputation(self, x_enc, x_mark_enc, x_dec, x_mark_dec, mask):
         # Embedding

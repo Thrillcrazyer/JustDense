@@ -1,6 +1,7 @@
 export CUDA_VISIBLE_DEVICES=0
 
-model_name=S_Mamba
+for model_name in JDS_Mamba
+do
 
 python -u run.py \
   --task_name long_term_forecast \
@@ -96,3 +97,4 @@ python -u run.py \
   --d_state 2 \
   --d_ff 512\
   --itr 1
+done

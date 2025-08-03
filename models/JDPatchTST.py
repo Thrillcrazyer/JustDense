@@ -59,7 +59,7 @@ class Model(nn.Module):
                             d_model=configs.d_model,
                             is_data_dependent=False,
                             max_seq_len=self.patch_num,
-                            nheads=configs.d_model//2
+                            nheads=configs.n_heads,
                         ),
                     configs.d_model,
                     configs.d_ff,

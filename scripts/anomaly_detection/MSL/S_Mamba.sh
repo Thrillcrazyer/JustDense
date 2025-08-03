@@ -1,11 +1,13 @@
 export CUDA_VISIBLE_DEVICES=0
 
+for model_name in S_Mamba JDS_Mamba
+do
 python -u run.py \
   --task_name anomaly_detection \
   --is_training 1 \
   --root_path ./dataset/MSL \
   --model_id MSL \
-  --model S_Mamba \
+  --model $model_name \
   --data MSL \
   --features M \
   --seq_len 100 \
@@ -13,9 +15,10 @@ python -u run.py \
   --d_model 128 \
   --d_ff 128 \
   --d_state 2\
-  --e_layers 3 \
+  --e_layers 1 \
   --enc_in 55 \
   --c_out 55 \
   --anomaly_ratio 1 \
   --batch_size 128 \
   --train_epochs 10
+done

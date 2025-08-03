@@ -1,11 +1,13 @@
 export CUDA_VISIBLE_DEVICES=1
 
+for model_name in Transformer JDTransformer
+do
 python -u run.py \
   --task_name anomaly_detection \
   --is_training 1 \
   --root_path ./dataset/SMD \
   --model_id SMD \
-  --model Transformer \
+  --model $model_name \
   --data SMD \
   --features M \
   --seq_len 100 \
@@ -18,3 +20,4 @@ python -u run.py \
   --anomaly_ratio 0.5 \
   --batch_size 128 \
   --train_epochs 10
+done

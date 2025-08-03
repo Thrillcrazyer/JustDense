@@ -35,7 +35,7 @@ class Model(nn.Module):
                 EncoderLayer(
                     AutoCorrelationLayer(
                         AutoCorrelation(False, configs.factor, attention_dropout=configs.dropout,
-                                        output_attention=False),
+                                        output_attention=configs.output_attention),
                         configs.d_model, configs.n_heads),
                     configs.d_model,
                     configs.d_ff,

@@ -80,6 +80,24 @@ class StandardScaler():
         return (data * self.std) + self.mean
 
 
+def visualize_attn_map(attn, name='./attn_map.jpg', np_name='./attn_map.npy', dpi=600):
+    print("FINAL ATTN MAP SHAPE: ", attn.shape)
+    #attn = attn.squeeze()             # [32, 11, 11]
+    #attn = attn[0,:,:]           # [11, 11]
+    if len(attn.shape)==3:
+        attn = attn.mean(dim=0)   
+    if len(attn.shape)==4:
+        attn = attn.mean(dim=(0, 1))
+        # [11, 11] 평균을 통해 단일 어텐션 맵 생성
+    plt.figure(figsize=(5, 5), dpi=dpi)
+    plt.imshow(attn.detach().cpu().numpy(), cmap='viridis',vmin=0, vmax=0.4)  # 어텐션 맵 시각화
+    plt.axis('off')                    # 축 제거 (선택)
+    plt.tight_layout(pad=0)            # 여백 최소화
+    plt.savefig(name, dpi=dpi, bbox_inches='tight', pad_inches=0)
+    plt.close()
+    np.save(np_name, attn.detach().cpu().numpy())
+
+
 def visual(true, preds=None, name='./pic/test.pdf'):
     """
     Results visualization
@@ -119,18 +137,42 @@ def adjustment(gt, pred):
 def cal_accuracy(y_pred, y_true):
     return np.mean(y_pred == y_true)
 
-def test_params_flop(model,x_shape):
+def test_params_flop(model, x_shape, label_len=48, pred_len=720):
     """
-    If you want to thest former's flop, you need to give default value to inputs in model.forward(), the following code can only pass one argument to forward()
+    Handle models with multiple forward arguments and correct input shapes
     """
     model_params = 0
     for parameter in model.parameters():
         model_params += parameter.numel()
-        print('INFO: Trainable parameter count: {:.2f}M'.format(model_params / 1000000.0))
-    from ptflops import get_model_complexity_info    
-    with torch.cuda.device(0):
-        macs, params = get_model_complexity_info(model.cuda(), x_shape, as_strings=True, print_per_layer_stat=True)
-        # print('Flops:' + flops)
-        # print('Params:' + params)
-        print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
-        print('{:<30}  {:<8}'.format('Number of parameters: ', params))
+    print('INFO: Trainable parameter count: {:.2f}M'.format(model_params / 1000000.0))
+
+    class ModelWrapper(torch.nn.Module):
+        def __init__(self, model):
+            super().__init__()
+            self.model = model
+
+        def forward(self, x):
+            batch_size, seq_len, features = x.shape
+            dec_len = label_len + pred_len
+            x_mark_enc = torch.zeros(batch_size, seq_len, 4).to(x.device)
+            x_dec = torch.zeros(batch_size, dec_len, features).to(x.device)
+            x_mark_dec = torch.zeros(batch_size, dec_len, 4).to(x.device)
+            return self.model(x, x_mark_enc, x_dec, x_mark_dec)
+
+    try:
+        from ptflops import get_model_complexity_info
+        wrapped_model = ModelWrapper(model)
+        with torch.cuda.device(0):
+            macs, params = get_model_complexity_info(
+                wrapped_model.cuda(),
+                x_shape[1:],  # Remove batch dimension
+                as_strings=True,
+                print_per_layer_stat=False
+            )
+            print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
+            print('{:<30}  {:<8}'.format('Number of parameters: ', params))
+    except Exception as e:
+        print(f"FLOP calculation failed: {e}")
+        print("Only parameter count is available.")
+    return macs,model_params
+

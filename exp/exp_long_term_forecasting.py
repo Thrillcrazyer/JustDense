@@ -1,6 +1,6 @@
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
-from utils.tools import EarlyStopping, adjust_learning_rate, visual
+from utils.tools import EarlyStopping, adjust_learning_rate, visual,visualize_attn_map,test_params_flop
 from utils.metrics import metric
 import torch
 import torch.nn as nn
@@ -18,6 +18,7 @@ warnings.filterwarnings('ignore')
 class Exp_Long_Term_Forecast(Exp_Basic):
     def __init__(self, args):
         super(Exp_Long_Term_Forecast, self).__init__(args)
+        self.output_attention =args.output_attention
 
     def _build_model(self):
         model = self.model_dict[self.args.model].Model(self.args).float()
@@ -58,7 +59,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                     with torch.cuda.amp.autocast():
                         outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
                 else:
-                    outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
+                        outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
                 f_dim = -1 if self.args.features == 'MS' else 0
                 outputs = outputs[:, -self.args.pred_len:, f_dim:]
                 batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
@@ -177,12 +178,18 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
-        self.model.eval()
+
+        accumulated_attns = None
+        total_batch_time = 0.0
+        batch_count = 0
+        attn_count = 0
+        batch_start_time = time.time()
+
+        self.model.eval().to(self.device)
         with torch.no_grad():
             for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(test_loader):
                 batch_x = batch_x.float().to(self.device)
                 batch_y = batch_y.float().to(self.device)
-
                 batch_x_mark = batch_x_mark.float().to(self.device)
                 batch_y_mark = batch_y_mark.float().to(self.device)
 
@@ -195,12 +202,21 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                         outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
                 else:
                     outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
+                batch_end_time = time.time()
+                batch_duration = batch_end_time - batch_start_time
+                total_batch_time += batch_duration
+                batch_count += 1
+                #print(f"Test iter: {i+1} | s/iter: {batch_duration:.4f}")
+            
 
                 f_dim = -1 if self.args.features == 'MS' else 0
                 outputs = outputs[:, -self.args.pred_len:, :]
                 batch_y = batch_y[:, -self.args.pred_len:, :].to(self.device)
                 outputs = outputs.detach().cpu().numpy()
                 batch_y = batch_y.detach().cpu().numpy()
+                total_batch_time += batch_duration
+                batch_count += 1
+                #print(f"Test iter: {i+1} | s/iter: {batch_duration:.4f}")
                 if test_data.scale and self.args.inverse:
                     shape = batch_y.shape
                     if outputs.shape[-1] != batch_y.shape[-1]:
@@ -216,6 +232,17 @@ class Exp_Long_Term_Forecast(Exp_Basic):
 
                 preds.append(pred)
                 trues.append(true)
+                
+                if self.output_attention:
+                    attns = self.model.get_mixers(batch_x, batch_x_mark, dec_inp, batch_y_mark)[0]
+                    print("ATTN MAP SHAPE: ", attns.shape)
+                    attn_to_add = attns.mean(dim=0) if len(attns.shape) != 2 else attns
+                    if accumulated_attns is None:
+                        accumulated_attns = attn_to_add.clone()  # clone() 추가
+                    else:
+                        accumulated_attns += attn_to_add
+                    attn_count += 1
+                
                 if i % 20 == 0:
                     input = batch_x.detach().cpu().numpy()
                     if test_data.scale and self.args.inverse:
@@ -223,8 +250,16 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                         input = test_data.inverse_transform(input.reshape(shape[0] * shape[1], -1)).reshape(shape)
                     gt = np.concatenate((input[0, :, -1], true[0, :, -1]), axis=0)
                     pd = np.concatenate((input[0, :, -1], pred[0, :, -1]), axis=0)
-                    visual(gt, pd, os.path.join(folder_path, str(i) + '.pdf'))
+                    #visual(gt, pd, os.path.join(folder_path, str(i) + '.pdf'))
 
+        # 모든 배치의 attention을 평균내어 최종 visualization
+        if self.output_attention and accumulated_attns is not None:
+            final_attn = accumulated_attns / attn_count  # 평균값으로 변경
+            visualize_attn_map(
+                final_attn,  # numpy로 넘기기
+                name=os.path.join(folder_path, 'final_avg_attn.pdf'),
+                np_name=os.path.join(folder_path, 'final_avg_attn.npy')
+            )
         preds = np.concatenate(preds, axis=0)
         trues = np.concatenate(trues, axis=0)
         print('test shape:', preds.shape, trues.shape)
@@ -232,6 +267,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
         print('test shape:', preds.shape, trues.shape)
 
+        
         # result save
         folder_path = './results/' + setting + '/'
         if not os.path.exists(folder_path):
@@ -253,16 +289,21 @@ class Exp_Long_Term_Forecast(Exp_Basic):
             dtw = 'Not calculated'
 
         mae, mse, rmse, mape, mspe = metric(preds, trues)
-        print('mse:{}, mae:{}, dtw:{}'.format(mse, mae, dtw))
-        f = open("result_long_term_forecast.txt", 'a')
-        f.write(setting + "  \n")
-        f.write('mse:{}, mae:{}, dtw:{}'.format(mse, mae, dtw))
-        f.write('\n')
-        f.write('\n')
-        f.close()
+        avg_s_per_iter = total_batch_time / batch_count if batch_count > 0 else 0.0
+        # Attn Map Visualization.
+        macs, params = test_params_flop(self.model, (self.args.batch_size, self.args.seq_len, self.args.enc_in),label_len=self.args.label_len,pred_len=self.args.pred_len)
+        print('mse:{}, mae:{}, dtw:{}, macs{}, params{}, avg_s/iter:{:.4f}'.format(mse, mae, dtw, macs, params, avg_s_per_iter))
+        with open("result_long_term_forecast.txt", 'a') as f:
+            f.write(setting + "  \n")
+            f.write('mse:{}, mae:{}, dtw:{}, avg_s/iter:{:.4f}'.format(mse, mae, dtw, avg_s_per_iter))
+            f.write('\n')
+            f.write('\n')
 
-        np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe]))
-        np.save(folder_path + 'pred.npy', preds)
-        np.save(folder_path + 'true.npy', trues)
+        #np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe]))
+        #np.save(folder_path + 'pred.npy', preds)
+        #np.save(folder_path + 'true.npy', trues)
+        
+        # Attn Map Visualization.
+        #macs, params = test_params_flop(self.model, (self.args.batch_size, self.args.seq_len, self.args.enc_in))
 
         return

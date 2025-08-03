@@ -1,9 +1,9 @@
 export CUDA_VISIBLE_DEVICES=1
 
-model_name=Mamba
-
-for pred_len in 96 192 336 720
+for model_name in Mamba JDMamba
 do
+  for pred_len in 96 192 336 720
+  do
 
 python -u run.py \
   --task_name long_term_forecast \
@@ -17,7 +17,7 @@ python -u run.py \
   --seq_len $pred_len \
   --label_len 48 \
   --pred_len $pred_len \
-  --e_layers 2 \
+  --e_layers 1 \
   --enc_in 7 \
   --expand 2 \
   --d_ff 16 \
@@ -27,4 +27,5 @@ python -u run.py \
   --des 'Exp' \
   --itr 1 \
 
+done
 done

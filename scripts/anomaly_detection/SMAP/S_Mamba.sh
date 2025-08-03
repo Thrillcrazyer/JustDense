@@ -1,11 +1,13 @@
 export CUDA_VISIBLE_DEVICES=0
 
+for model_name in S_Mamba JDS_Mamba
+do
 python -u run.py \
   --task_name anomaly_detection \
   --is_training 1 \
   --root_path ./dataset/SMAP \
   --model_id SMAP \
-  --model S_Mamba \
+  --model $model_name \
   --data SMAP \
   --features M \
   --seq_len 100 \
@@ -19,3 +21,4 @@ python -u run.py \
   --anomaly_ratio 1 \
   --batch_size 128 \
   --train_epochs 3
+done

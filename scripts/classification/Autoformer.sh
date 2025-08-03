@@ -1,8 +1,9 @@
 export CUDA_VISIBLE_DEVICES=1
 
-model_name=Autoformer
+for model_name in Autoformer JDAutoformer
+do
 
-# python -u run.py \
+python -u run.py \
   --task_name classification \
   --is_training 1 \
   --root_path ./dataset/EthanolConcentration/ \
@@ -181,3 +182,4 @@ python -u run.py \
   --learning_rate 0.001 \
   --train_epochs 100 \
   --patience 10
+done

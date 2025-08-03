@@ -1,11 +1,47 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from layers.Transformer_EncDec import Encoder, EncoderLayer
+from layers.Transformer_EncDec import Encoder
 from layers.SelfAttention_Family import FullAttention, AttentionLayer
 from layers.Embed import DataEmbedding_inverted
 import numpy as np
 from layers.build_matrix import MatrixMixer
+
+
+class EncoderLayer(nn.Module):
+    def __init__(self, attention, d_model, d_ff=None,n_heads=None, enc_in=None, dropout=0.1, activation="relu"):
+        super(EncoderLayer, self).__init__()
+        d_ff = d_ff or 4 * d_model
+        self.attention = attention
+
+        self.mixer = MatrixMixer(
+                            matrix_mixer_type="dense",
+                            qk_dim=4,
+                            d_model=n_heads,
+                            is_data_dependent=False,
+                            max_seq_len=d_model,
+                            nheads=n_heads,
+                            #nheads=1,
+                            
+                        )
+        
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
+        self.dropout = nn.Dropout(dropout)
+        self.activation = F.relu if activation == "relu" else F.gelu
+
+    def forward(self, x, attn_mask=None, tau=None, delta=None):
+        new_x, _ = self.attention(
+            x, x, x,
+            attn_mask=attn_mask,
+            tau=tau, delta=delta
+        )
+        x = x + self.dropout(new_x)
+
+        y = x = self.norm1(x).permute(0,2,1)
+        y, attn = self.mixer(y,y,y)
+
+        return self.norm2((x + y).permute(0,2,1)), attn
 
 class Model(nn.Module):
     """
@@ -24,16 +60,13 @@ class Model(nn.Module):
         self.encoder = Encoder(
             [
                 EncoderLayer(
-                        MatrixMixer(
-                            matrix_mixer_type="dense",
-                            qk_dim=4,
-                            d_model=configs.d_model,
-                            is_data_dependent=False,
-                            max_seq_len=configs.enc_in+4,
-                            nheads=configs.d_model//2
-                        ),
+                    AttentionLayer(
+                        FullAttention(False, configs.factor, attention_dropout=configs.dropout,
+                                      output_attention=configs.output_attention), d_model=configs.d_model, n_heads=configs.n_heads),
                     configs.d_model,
                     configs.d_ff,
+                    enc_in=configs.enc_in,
+                    n_heads=configs.enc_in+4,
                     dropout=configs.dropout,
                     activation=configs.activation
                 ) for l in range(configs.e_layers)
@@ -44,6 +77,22 @@ class Model(nn.Module):
         # Decoder
         if self.task_name == 'long_term_forecast' or self.task_name == 'short_term_forecast':
             self.projection = nn.Linear(configs.d_model, configs.pred_len, bias=True)
+            self.encoder = Encoder(
+                [
+                    EncoderLayer(
+                        AttentionLayer(
+                            FullAttention(False, configs.factor, attention_dropout=configs.dropout,
+                                        output_attention=configs.output_attention), d_model=configs.d_model, n_heads=configs.n_heads),
+                        configs.d_model,
+                        configs.d_ff,
+                        enc_in=configs.enc_in,
+                        n_heads=configs.enc_in+4,
+                        dropout=configs.dropout,
+                        activation=configs.activation
+                    ) for l in range(configs.e_layers)
+                ],
+                norm_layer=torch.nn.LayerNorm(configs.d_model)
+            )
         if self.task_name == 'imputation':
             self.projection = nn.Linear(configs.d_model, configs.seq_len, bias=True)
         if self.task_name == 'anomaly_detection':

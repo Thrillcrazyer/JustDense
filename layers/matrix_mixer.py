@@ -170,6 +170,16 @@ class MatrixMixer(nn.Module):
             raise NotImplementedError
 
         return matrix_mixer, d_in_proj, conv_dim
+    def get_matrixmixer(self,u):
+        batch, seqlen, dim = u.shape
+        assert self.activation in ["silu", "swish"]
+
+        u_proj = self.in_proj(u)  # (B, L, d_in_proj)
+
+        if self.matrix_mixer_type == "dense":            
+            return self.matrix_mixer.M
+        
+
 
     def forward(self, u):
         """

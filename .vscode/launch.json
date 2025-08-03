@@ -1,6 +1,10 @@
 {
     "version": "0.2.0",
     "configurations": [
+    
+      
+
+
 
 
         {
@@ -35,6 +39,66 @@
             ]
         },
         {
+      "name": "Python: JDModernTCN Classification",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--task_name", "classification",
+        "--is_training", "1",
+        "--root_path", "../all_datasets/Handwriting/",
+        "--data", "UEA",
+        "--model_id", "Handwriting",
+        "--model", "JDModernTCN",
+        "--ffn_ratio", "4",
+        "--patch_size", "1",
+        "--patch_stride", "1",
+        "--num_blocks", "1",
+        "--large_size", "13",
+        "--small_size", "5",
+        "--dims", "256",
+        "--head_dropout", "0.1",
+        "--dropout", "0.1",
+        "--class_dropout", "0.1",
+        "--itr", "1",
+        "--learning_rate", "0.001",
+        "--batch_size", "64",
+        "--train_epochs", "100",
+        "--patience", "10",
+        "--des", "Exp",
+        "--use_multi_scale", "False"
+      ]
+    },
+        {
+            "name": "Debug Autoformer",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/run.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--task_name", "long_term_forecast",
+                "--is_training", "1",
+                "--root_path", "./dataset/weather/",
+                "--data_path", "weather.csv",
+                "--model_id", "weather_720_96",
+                "--model", "Autoformer",
+                "--data", "custom",
+                "--features", "M",
+                "--seq_len", "720",
+                "--label_len", "48",
+                "--pred_len", "96",
+                "--e_layers", "2",
+                "--d_layers", "1",
+                "--factor", "3",
+                "--enc_in", "21",
+                "--dec_in", "21",
+                "--c_out", "21",
+                "--des", "Exp",
+                "--itr", "1"
+            ],
+        },
+        {
             "name": "Python Debugger: iTransformer_ETTh2_96_96",
             "type": "debugpy",
             "request": "launch",
@@ -45,17 +109,18 @@
             },
             "args": [
                 "--task_name", "long_term_forecast",
+                "--train_epochs", "1",
                 "--is_training", "1",
                 "--root_path", "./dataset/ETT-small/",
                 "--data_path", "ETTh2.csv",
                 "--model_id", "ETTh2_96_96",
-                "--model", "iTransformer",
+                "--model", "JDiTransformer",
                 "--data", "ETTh2",
                 "--features", "M",
                 "--seq_len", "96",
                 "--label_len", "48",
                 "--pred_len", "96",
-                "--e_layers", "2",
+                "--e_layers", "1",
                 "--d_layers", "1",
                 "--factor", "3",
                 "--enc_in", "7",
@@ -63,9 +128,9 @@
                 "--c_out", "7",
                 "--des", "Exp",
                 "--d_model", "128",
-                "--d_ff", "128",
+                "--d_ff", "256",
                 "--itr", "1",
-                "--n_heads", "1",
+                "--n_heads", "8",
             ]
         },
         {
@@ -81,6 +146,7 @@
               "--task_name", "long_term_forecast",
               "--is_training", "1",
               "--root_path", "./dataset/ETT-small/",
+              "--train_epochs", "2",
               "--data_path", "ETTh1.csv",
               "--model_id", "ETTh1_96_96",
               "--model", "JDPatchTST",
@@ -160,6 +226,41 @@
         "--loss", "SMAPE"
       ]
     },
+    {
+      "name": "Debug Mamba Forecast 96",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "CUDA_VISIBLE_DEVICES": "1"
+      },
+      "args": [
+        "--task_name", "long_term_forecast",
+        "--is_training", "1",
+        "--root_path", "./dataset/ETT-small/",
+        "--train_epochs", "1",
+        "--data_path", "ETTh1.csv",
+        "--model_id", "ETTh1_96_96",
+        "--model", "Mamba",
+        "--data", "ETTh1",
+        "--features", "M",
+        "--seq_len", "96",
+        "--label_len", "48",
+        "--pred_len", "96",
+        "--e_layers", "1",
+        "--d_layers", "1",
+        "--enc_in", "7",
+        "--expand", "2",
+        "--d_ff", "16",
+        "--d_conv", "4",
+        "--c_out", "7",
+        "--d_model", "128",
+        "--des", "Exp",
+        "--itr", "1"
+      ]
+    }
      {
       "name": "Run JDS_Mamba Classification",
       "type": "python",
@@ -205,9 +306,9 @@
         "--is_training", "1",
         "--root_path", "./dataset/EthanolConcentration/",
         "--model_id", "EthanolConcentration",
-        "--model", "JDMamba",
+        "--model", "Mamba",
         "--data", "UEA",
-        "--e_layers", "3",
+        "--e_layers", "1",
         "--batch_size", "16",
         "--d_model", "2048",
         "--expand", "8",

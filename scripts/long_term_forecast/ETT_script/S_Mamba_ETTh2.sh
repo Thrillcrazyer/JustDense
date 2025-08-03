@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=1
 
-model_name=S_Mamba
-# d state 2
+for model_name in JDS_Mamba
+do
 python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
@@ -13,7 +13,7 @@ python -u run.py \
   --features M \
   --seq_len 96 \
   --pred_len 96 \
-  --e_layers 2 \
+  --e_layers 1 \
   --enc_in 7 \
   --dec_in 7 \
   --c_out 7 \
@@ -35,7 +35,7 @@ python -u run.py \
   --features M \
   --seq_len 96 \
   --pred_len 192 \
-  --e_layers 2 \
+  --e_layers 1 \
   --enc_in 7 \
   --dec_in 7 \
   --c_out 7 \
@@ -57,7 +57,7 @@ python -u run.py \
   --features M \
   --seq_len 96 \
   --pred_len 336 \
-  --e_layers 2 \
+  --e_layers 1 \
   --enc_in 7 \
   --dec_in 7 \
   --c_out 7 \
@@ -79,7 +79,7 @@ python -u run.py \
   --features M \
   --seq_len 96 \
   --pred_len 720 \
-  --e_layers 2 \
+  --e_layers 1 \
   --enc_in 7 \
   --dec_in 7 \
   --c_out 7 \
@@ -89,3 +89,4 @@ python -u run.py \
   --d_state 2 \
   --learning_rate 0.00007 \
   --itr 1
+done

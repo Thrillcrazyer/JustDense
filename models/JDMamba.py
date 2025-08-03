@@ -23,7 +23,7 @@ class Model(nn.Module):
                             matrix_mixer_type="dense",
                             qk_dim=-1,
                             d_model=configs.d_model,
-                            d_conv=7,
+                            d_conv=1,
                             expand=configs.expand,
                             is_data_dependent=False,
                             max_seq_len=configs.seq_len,
@@ -40,6 +40,16 @@ class Model(nn.Module):
             self.act = F.gelu
             self.dropout = nn.Dropout(configs.dropout)
             self.projection = nn.Linear(configs.d_model * configs.seq_len, configs.num_class)
+            
+    def get_mixers(self, x_enc, x_mark_enc, x_dec=None, x_mark_dec=None):
+        mean_enc = x_enc.mean(1, keepdim=True).detach()
+        x_enc = x_enc - mean_enc
+        std_enc = torch.sqrt(torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5).detach()
+        x_enc = x_enc / std_enc
+
+        x = self.embedding(x_enc, x_mark_enc)
+        attn=self.mamba.get_matrixmixer(x)
+        return attn
         
     def forecast(self, x_enc, x_mark_enc):
         mean_enc = x_enc.mean(1, keepdim=True).detach()
