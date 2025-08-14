@@ -7,10 +7,11 @@ Official Respository for JustDense
 
 If you find this repo helpful, please cite our paper.
 
-```
+```bibtex
 @article{park205justdense,
   title={JustDense: Just using Dense instead of Sequence Mixer for Time Series analysis},
   author={Park, Taekhyun and Lee, Yongjae and Park, Daesan and Kim, Dohee and Bae, Hyerim},
+  journal={arXiv preprint arXiv:2508.09153},
   year={2025}
 }
 ```
