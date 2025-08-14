@@ -1,4 +1,6 @@
 # JustDense
+[![](https://img.shields.io/badge/arXiv:2508.09153-B31B1B?logo=arxiv)](https://arxiv.org/pdf/2508.09153)
+
 Official Respository for JustDense
 
 ## Citation
