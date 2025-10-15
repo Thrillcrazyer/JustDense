@@ -5,4 +5,4 @@ The following individuals are members of [BAELAB](https://pnubaelab.github.io/),
 - [Yongjae Lee](https://github.com/yongzzai)
 - [Daesan Park](https://github.com/PARKDAESAN)
 - Dohee Kim
-- Haerim Bae
+- Hyerim Bae
