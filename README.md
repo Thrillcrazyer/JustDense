@@ -4,7 +4,6 @@
 Official Respository for JustDense
 
 ## Citation
-
 If you find this repo helpful, please cite our paper.
 
 ```bibtex
@@ -15,6 +14,9 @@ If you find this repo helpful, please cite our paper.
   year={2025}
 }
 ```
+## Contact
+If you have any questions or concerns, please submit an issue on GitHub. For matters that require more direct communication, you can also email us at pthpark1@pusan.ac.kr.
+
 
 ## Acknowledgement
 
